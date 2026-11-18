@@ -3,20 +3,22 @@ from wom import update_all, get_daily_gains
 from formatter import build_embed, has_activity
 from discord_webhook import send_embed
 from telegram import send_gmt_message
+from tpb_watch import check_tpb
 
 
 def main():
+    try:
+        check_tpb()
+    except Exception as e:
+        print(f"TPB check failed: {e}")
 
     print("Updating players...")
-
     update_all(PLAYERS)
 
     results = {}
 
     for player in PLAYERS:
-
         print(f"Fetching gains for {player}")
-
         try:
             results[player] = get_daily_gains(player)
         except Exception as e:
@@ -28,7 +30,6 @@ def main():
     ]
 
     if not active_players:
-
         print("No activity for any tracked player. Skipping Discord notification.")
 
         telegram_message = "⏰ OSRS Daily Reset - 0 GMT. No activity to report."
